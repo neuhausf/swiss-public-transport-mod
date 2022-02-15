@@ -1,0 +1,1 @@
+"""The (modified) swiss public transport component."""
