@@ -1,23 +1,18 @@
 [![](https://img.shields.io/github/release/neuhausf/hacs-swiss-public-transport-mod/all.svg)](https://github.com/neuhausf/hacs-swiss-public-transport-mod/releases)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 
-# hacs-swiss-public-transport-mod
+# swiss-public-transport-mod
 
-Swiss public transport stationboard and extended platform sensor
+Swiss public transport stationboard
 
 ## Information
 
-Data from meteo swiss official website
-
-The forecast is extracted from the meteo swiss website
-
-Current conditions are from official data files.
-  
+Note: Requires https://github.com/neuhausf/swiss-public-transport-mod to be installed first.
 
 ## Configuration
 
 - Got to HACS
-- Search for "hacs-swiss-public-transport-mod"
+- Search for "swiss-stationboard"
 
 Add a new sensor to your configuration.yaml:
 

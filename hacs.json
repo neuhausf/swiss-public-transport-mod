@@ -1,8 +1,6 @@
 {
-    "name": "Swiss public transport stationboard and extended platform sensor",
+    "name": "Swiss public transport platform sensor",
     "render_readme" : true,
 	"country": "CH",
-    "domains": ["transport", "sensor", "stationboard"],
-    "iot_class" : "cloud_polling",
-    "country": "CH"
+    "domains": ["transport", "sensor"]
   }
