@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 import logging
+import asyncio
 
 from opendata_transport import OpendataTransport, OpendataTransportStationboard
 from opendata_transport.exceptions import OpendataTransportError
@@ -98,7 +99,7 @@ async def async_setup_platform(
             stationboard, session, limit
         )
         if await test_opendata(opendata):
-            entities.append(SwissPublicTransportStationboardSensor(opendata, name))
+            entities.append(SwissPublicTransportStationboardSensor(opendata, session, name))
 
     async_add_entities(entities)
 
@@ -106,9 +107,10 @@ async def async_setup_platform(
 class SwissPublicTransportStationboardSensor(SensorEntity):
     """Implementation of an Swiss public transport stationboard sensor."""
 
-    def __init__(self, opendata, name):
+    def __init__(self, opendata, session, name):
         """Initialize the sensor."""
         self._opendata = opendata
+        self._session = session
         self._name = name
         self._remaining_time = ""
 
@@ -156,6 +158,16 @@ class SwissPublicTransportStationboardSensor(SensorEntity):
             if self._remaining_time.total_seconds() < 0:
                 self._opendata.journeys = []
                 await self._opendata.async_get_data()
+                for journey in self._opendata.journeys:
+                    connection = OpendataTransport(
+                        self._opendata.station, journey["to"], self._session, 3
+                    )
+                    await connection.async_get_data()
+                    for conn in connection.connections:
+                        if (journey["name"] == connection.connections[conn]["number"]):
+                            # print(connection.connections[conn]["delay"])
+                            journey["delay"] = connection.connections[conn]["delay"]
+
         except OpendataTransportError:
             _LOGGER.error("Unable to retrieve data from transport.opendata.ch")
 
@@ -225,3 +237,7 @@ class SwissPublicTransportSensor(Entity):
                 await self._opendata.async_get_data()
         except OpendataTransportError:
             _LOGGER.error("Unable to retrieve data from transport.opendata.ch")
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(async_setup_platform(HomeAssistant()))
+loop.close()
