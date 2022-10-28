@@ -237,7 +237,3 @@ class SwissPublicTransportSensor(Entity):
                 await self._opendata.async_get_data()
         except OpendataTransportError:
             _LOGGER.error("Unable to retrieve data from transport.opendata.ch")
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(async_setup_platform(HomeAssistant()))
-loop.close()
