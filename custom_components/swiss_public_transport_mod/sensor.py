@@ -155,22 +155,20 @@ class SwissPublicTransportStationboardSensor(SensorEntity):
         """Get the latest data from opendata.ch and update the states."""
         _LOGGER.info("async_update called")
         try:
-            if self._remaining_time.total_seconds() < 0:
-                self._opendata.journeys = []
-                await self._opendata.async_get_data()
-                for journey in self._opendata.journeys:
-                    connection = OpendataTransport(
-                        self._opendata.station, journey["to"], self._session, 3
-                    )
-                    await connection.async_get_data()
-                    for conn in connection.connections:
-                        if (journey["name"] == connection.connections[conn]["number"]):
-                            # print(connection.connections[conn]["delay"])
-                            journey["delay"] = connection.connections[conn]["delay"]
+            self._opendata.journeys = []
+            await self._opendata.async_get_data()
+            for journey in self._opendata.journeys:
+                connection = OpendataTransport(
+                    self._opendata.station, journey["to"], self._session, 3
+                )
+                await connection.async_get_data()
+                for conn in connection.connections:
+                    if (journey["name"] == connection.connections[conn]["number"]):
+                        # print(connection.connections[conn]["delay"])
+                        journey["delay"] = connection.connections[conn]["delay"]
 
         except OpendataTransportError:
             _LOGGER.error("Unable to retrieve data from transport.opendata.ch")
-
 
 class SwissPublicTransportSensor(Entity):
     """Implementation of an Swiss public transport sensor."""
@@ -233,7 +231,6 @@ class SwissPublicTransportSensor(Entity):
         """Get the latest data from opendata.ch and update the states."""
 
         try:
-            if self._remaining_time.total_seconds() < 0:
-                await self._opendata.async_get_data()
+            await self._opendata.async_get_data()
         except OpendataTransportError:
             _LOGGER.error("Unable to retrieve data from transport.opendata.ch")
