@@ -157,15 +157,6 @@ class SwissPublicTransportStationboardSensor(SensorEntity):
         try:
             self._opendata.journeys = []
             await self._opendata.async_get_data()
-            for journey in self._opendata.journeys:
-                connection = OpendataTransport(
-                    self._opendata.station, journey["to"], self._session, 3
-                )
-                await connection.async_get_data()
-                for conn in connection.connections:
-                    if (journey["name"] == connection.connections[conn]["number"]):
-                        # print(connection.connections[conn]["delay"])
-                        journey["delay"] = connection.connections[conn]["delay"]
 
         except OpendataTransportError:
             _LOGGER.error("Unable to retrieve data from transport.opendata.ch")
