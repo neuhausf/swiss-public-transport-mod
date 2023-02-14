@@ -30,6 +30,43 @@ sensor:
     - Schüpfen
 ```
 
+Note that you can aggregate multiple starting stations into the same sensor. For example, if multiple, surrounding bus/tram stations are to be included. For each station a `limit` maximum number of connections is fetched:
+
+```YAML
+sensor:
+  - platform: swiss_public_transport_mod
+    name: Bern
+    limit: 4
+    stationboard:
+    - Bern
+    - Bern, Hirschengraben
+```
+
+In this example, `limit` equals 4, so 4 connections are fetched starting from Bern and 4 connections starting from Bern, Hirschengraben (total 8):
+
+<img src="https://user-images.githubusercontent.com/7963239/218667500-dddbdf45-9b1a-40a6-9c04-83a018d25e26.png" width="300" >
+(note that you need the [lovelace-card](https://github.com/neuhausf/lovelace-swiss-stationboard "lovelace-card") to visualize the sensor)
+
+
+Multiple sensors with completely different output locations are also possible. To do this, simply duplicate the configuration:
+
+```YAML
+sensor:
+  - platform: swiss_public_transport_mod
+    name: Schüpfen
+    limit: 4
+    stationboard:
+    - Schüpfen
+  - platform: swiss_public_transport_mod
+    name: Langenthal
+    limit: 4
+    stationboard:
+    - Langenthal
+```
+... this will lead to:
+
+<img src="https://user-images.githubusercontent.com/7963239/218668664-5f6b70ad-6e0a-410b-83a3-c90f174da738.png" width="300" >
+
 ## Privacy 
 
 This integration uses :
