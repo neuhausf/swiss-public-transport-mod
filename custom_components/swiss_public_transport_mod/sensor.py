@@ -10,7 +10,7 @@ from opendata_transport.exceptions import OpendataTransportError
 import voluptuous as vol
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA, SensorEntity
-from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME
+from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME, CONF_UNIQUE_ID
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
@@ -21,6 +21,7 @@ import homeassistant.util.dt as dt_util
 
 _LOGGER = logging.getLogger(__name__)
 
+ATTR_UNIQUE_ID = "unique_id"
 ATTR_DEPARTURE_TIME1 = "next_departure"
 ATTR_DEPARTURE_TIME2 = "next_on_departure"
 ATTR_DURATION = "duration"
@@ -51,6 +52,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Optional(CONF_DESTINATION): cv.string,
         vol.Optional(CONF_START): cv.string,
+        vol.Optional(CONF_UNIQUE_ID): cv.string,
         vol.Optional(CONF_STATIONBOARD): vol.All(cv.ensure_list, [cv.string]),
         vol.Optional(CONF_LIMIT): cv.positive_int,
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
@@ -79,6 +81,7 @@ async def async_setup_platform(
 ) -> None:
     """Set up the Swiss public transport sensor."""
 
+    unique_id = config.get(ATTR_UNIQUE_ID)
     name = config.get(CONF_NAME)
     start = config.get(CONF_START)
     destination = config.get(CONF_DESTINATION)
@@ -99,7 +102,7 @@ async def async_setup_platform(
             stationboard, session, limit
         )
         if await test_opendata(opendata):
-            entities.append(SwissPublicTransportStationboardSensor(opendata, session, name))
+            entities.append(SwissPublicTransportStationboardSensor(opendata, session, name, unique_id))
 
     async_add_entities(entities)
 
@@ -107,12 +110,13 @@ async def async_setup_platform(
 class SwissPublicTransportStationboardSensor(SensorEntity):
     """Implementation of an Swiss public transport stationboard sensor."""
 
-    def __init__(self, opendata, session, name):
+    def __init__(self, opendata, session, name, unique_id):
         """Initialize the sensor."""
         self._opendata = opendata
         self._session = session
         self._name = name
         self._remaining_time = ""
+        self._attr_unique_id = unique_id
 
     @property
     def name(self):
